@@ -29,12 +29,13 @@ impl MailBox {
     }
 
     pub fn deliver(&mut self, recipient: &CubeSat) -> Option<Message> {
-        let find = self
-            .messages
-            .iter()
-            .enumerate()
-            .find(|(_, msg)| msg.to == recipient.id())
-            .map(|(idx, _)| idx);
+        let find = self.messages.iter().enumerate().find_map(|(idx, msg)| {
+            if msg.to == recipient.id() {
+                Some(idx)
+            } else {
+                None
+            }
+        });
 
         find.map(|idx| self.messages.remove(idx))
     }

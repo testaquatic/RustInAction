@@ -81,7 +81,7 @@ impl File {
         self.data.is_empty()
     }
 
-    /// 파일 이르을 반환한다.
+    /// 파일 이름을 반환한다.
     pub fn name(&self) -> &str {
         &self.name
     }

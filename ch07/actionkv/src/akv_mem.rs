@@ -1,7 +1,8 @@
 use clap::{Arg, Command};
+use libactionkv::ActionKV;
 
 #[derive(Debug)]
-enum Commands {
+enum Action {
     Get(String),
     Insert { key: String, value: String },
     Delete(String),
@@ -11,7 +12,7 @@ enum Commands {
 #[derive(Debug)]
 struct Args {
     fname: String,
-    command: Commands,
+    action: Action,
 }
 
 fn get_command_args() -> Args {
@@ -80,49 +81,51 @@ fn get_command_args() -> Args {
 
     let fname = matches.get_one::<String>("file").unwrap().to_string();
 
-    let command = match matches.subcommand() {
+    let action = match matches.subcommand() {
         Some(("get", sub_matches)) => {
             let key = sub_matches.get_one::<String>("key").unwrap().to_string();
-            Commands::Get(key)
+            Action::Get(key)
         }
         Some(("insert", sub_matches)) => {
             let key = sub_matches.get_one::<String>("key").unwrap().to_string();
             let value = sub_matches.get_one::<String>("value").unwrap().to_string();
-            Commands::Insert { key, value }
+            Action::Insert { key, value }
         }
         Some(("delete", sub_matches)) => {
             let key = sub_matches.get_one::<String>("key").unwrap().to_string();
-            Commands::Delete(key)
+            Action::Delete(key)
         }
         Some(("update", sub_matches)) => {
             let key = sub_matches.get_one::<String>("key").unwrap().to_string();
             let value = sub_matches.get_one::<String>("value").unwrap().to_string();
-            Commands::Update { key, value }
+            Action::Update { key, value }
         }
         _ => unreachable!(),
     };
 
-    Args { fname, command }
+    Args { fname, action }
 }
 
 fn main() {
     let args = get_command_args();
 
     let path = std::path::Path::new(&args.fname);
+    let mut store = ActionKV::open(path).expect("unable to open file");
+    store.load().expect("unable to load data");
 
-    match args.command {
-        Commands::Get(key) => {
-            let value = store.get(&key).unwrap();
-            println!("{}", value);
+    match args.action {
+        Action::Get(key) => match store.get(key.as_bytes()).expect("failed to get") {
+            Some(value) => println!("{:?}", value),
+            None => println!("{:?} not found", key),
+        },
+        Action::Insert { key, value } => {
+            store
+                .insert(key.as_bytes(), value.as_bytes())
+                .expect("failed to insert");
         }
-        Commands::Insert { key, value } => {
-            store.insert(key, value);
-        }
-        Commands::Delete(key) => {
-            store.remove(&key);
-        }
-        Commands::Update { key, value } => {
-            store.update(&key, value);
-        }
+        Action::Delete(key) => store.delete(key.as_bytes()).expect("failed to delete"),
+        Action::Update { key, value } => store
+            .update(key.as_bytes(), value.as_bytes())
+            .expect("failed to update"),
     }
 }

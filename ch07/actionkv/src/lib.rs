@@ -10,8 +10,8 @@ use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use crc::Crc;
 use serde::{Deserialize, Serialize};
 
-type ByteString = Vec<u8>;
-type ByteStr = [u8];
+pub type ByteString = Vec<u8>;
+pub type ByteStr = [u8];
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct KeyValuePair {

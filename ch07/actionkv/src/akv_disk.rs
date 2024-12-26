@@ -127,7 +127,7 @@ fn main() {
 
     match &args.action {
         Action::Get(key) => {
-            let index_as_bytes = a.get(&INDEX_KEY).unwrap().unwrap();
+            let index_as_bytes = a.get(INDEX_KEY).unwrap().unwrap();
             let index_decoded = bincode::deserialize::<HashMap<ByteString, u64>>(&index_as_bytes);
 
             let index = index_decoded.unwrap();

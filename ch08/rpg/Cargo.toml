@@ -1,0 +1,11 @@
+[package]
+name = "rpg"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = { version = "0.8" }
+
+[lib]
+name = "librpg"
+path = "src/lib.rs"

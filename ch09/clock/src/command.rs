@@ -13,6 +13,7 @@ pub struct CommandArgs {
 pub enum Action {
     Get,
     Set,
+    CheckNtp,
 }
 
 impl FromStr for Action {
@@ -21,6 +22,7 @@ impl FromStr for Action {
         match s {
             "get" => Ok(Action::Get),
             "set" => Ok(Action::Set),
+            "check-ntp" => Ok(Action::CheckNtp),
             _ => Err(format!("Invalid action: {}", s)),
         }
     }

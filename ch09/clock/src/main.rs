@@ -26,7 +26,7 @@ fn main() {
                 t_,
                 command_args.get_standard()
             );
-            let t = parser(t_).expect(&err_msg);
+            let t = parser(t_).expect(&**&err_msg);
 
             Clock::set(t);
         }
